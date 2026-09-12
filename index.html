@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#2d9cdb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="记账本">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="简单易用的每月支出管理工具，支持分类记账、预算监控和剩余额度计算">
+<title>记账本 - 每月支出管理</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%232d9cdb'/><path d='M30 35h40a6 6 0 0 1 6 6v30a6 6 0 0 1-6 6H30a6 6 0 0 1-6-6V41a6 6 0 0 1 6-6z' fill='none' stroke='white' stroke-width='5'/><line x1='24' y1='48' x2='76' y2='48' stroke='white' stroke-width='5'/><circle cx='62' cy='63' r='5' fill='white'/></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%232d9cdb'/><path d='M30 35h40a6 6 0 0 1 6 6v30a6 6 0 0 1-6 6H30a6 6 0 0 1-6-6V41a6 6 0 0 1 6-6z' fill='none' stroke='white' stroke-width='5'/><line x1='24' y1='48' x2='76' y2='48' stroke='white' stroke-width='5'/><circle cx='62' cy='63' r='5' fill='white'/></svg>">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%E8%AE%B0%E8%B4%A6%E6%9C%AC%22%2C%22short_name%22%3A%22%E8%AE%B0%E8%B4%A6%E6%9C%AC%22%2C%22description%22%3A%22%E7%AE%80%E5%8D%95%E6%98%93%E7%94%A8%E7%9A%84%E6%AF%8F%E6%9C%88%E6%94%AF%E5%87%BA%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f5f7fa%22%2C%22theme_color%22%3A%22%232d9cdb%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%2520xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%2520viewBox%3D%270%25200%2520100%2520100%27%3E%3Crect%2520width%3D%27100%27%2520height%3D%27100%27%2520rx%3D%2722%27%2520fill%3D%27%25232d9cdb%27%2F%3E%3Cpath%2520d%3D%27M30%252035h40a6%25206%25200%25200%25201%25206%25206v30a6%25206%25200%25200%25201-6%25206H30a6%25206%25200%25200%25201-6-6V41a6%25206%25200%25200%25201%25206-6z%27%2520fill%3D%27none%27%2520stroke%3D%27white%27%2520stroke-width%3D%275%27%2F%3E%3Cline%2520x1%3D%2724%27%2520y1%3D%2748%27%2520x2%3D%2776%27%2520y2%3D%2748%27%2520stroke%3D%27white%27%2520stroke-width%3D%275%27%2F%3E%3Ccircle%2520cx%3D%2762%27%2520cy%3D%2763%27%2520r%3D%275%27%2520fill%3D%27white%27%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22any%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%22%7D%5D%7D">
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --text: #1a2332;
+    --text-secondary: #6b7a8f;
+    --border: #e4e9f0;
+    --primary: #2d9cdb;
+    --primary-light: #e8f4fd;
+    --success: #27ae60;
+    --warning: #f39c12;
+    --danger: #e74c3c;
+    --shadow: 0 2px 12px rgba(0,0,0,0.06);
+    --radius: 14px;
+    --cat-food: #e74c3c;
+    --cat-transport: #3498db;
+    --cat-shopping: #9b59b6;
+    --cat-entertainment: #f39c12;
+    --cat-study: #1abc9c;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 20px;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  header p {
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+
+  /* ===== 概览卡片 ===== */
+  .overview-card {
+    background: linear-gradient(135deg, #2d9cdb 0%, #1a7bb8 100%);
+    border-radius: var(--radius);
+    padding: 28px;
+    color: #fff;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(45,156,219,0.25);
+  }
+
+  .overview-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .budget-label {
+    font-size: 14px;
+    opacity: 0.85;
+    margin-bottom: 4px;
+  }
+
+  .budget-amount {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+
+  .budget-amount span {
+    font-size: 18px;
+    font-weight: 400;
+    opacity: 0.8;
+  }
+
+  .budget-edit-btn {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.2s;
+  }
+
+  .budget-edit-btn:hover {
+    background: rgba(255,255,255,0.3);
+  }
+
+  .progress-section {
+    margin-bottom: 16px;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 10px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: #fff;
+    border-radius: 5px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+
+  .progress-fill.warning { background: #ffd166; }
+  .progress-fill.danger { background: #ff6b6b; }
+
+  .progress-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    opacity: 0.9;
+  }
+
+  .overview-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .stat-item {
+    background: rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    opacity: 0.8;
+    margin-bottom: 4px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .stat-value.remaining { color: #a8e6cf; }
+  .stat-value.spent { color: #ffd166; }
+
+  /* ===== 记账表单 ===== */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .card-title {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    background: var(--primary);
+    border-radius: 2px;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group.full {
+    grid-column: 1 / -1;
+  }
+
+  .form-group label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .form-group input,
+  .form-group select {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--text);
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+  }
+
+  .category-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .chip {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .chip .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .chip:hover {
+    border-color: var(--text-secondary);
+  }
+
+  .chip.active {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  .submit-btn:hover {
+    background: #1a7bb8;
+  }
+
+  .submit-btn:active {
+    transform: scale(0.98);
+  }
+
+  /* ===== 分类统计 ===== */
+  .category-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .cat-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .cat-name {
+    width: 60px;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .cat-name .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .cat-bar-wrap {
+    flex: 1;
+    height: 24px;
+    background: var(--bg);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .cat-bar {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    min-width: 0;
+  }
+
+  .cat-bar span {
+    font-size: 11px;
+    color: #fff;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .cat-amount {
+    width: 80px;
+    text-align: right;
+    font-size: 14px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .cat-percent {
+    width: 45px;
+    text-align: right;
+    font-size: 12px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+
+  /* ===== 账单列表 ===== */
+  .bill-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .bill-date-group {
+    margin-bottom: 16px;
+  }
+
+  .bill-date-header {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .bill-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f3f7;
+    gap: 12px;
+  }
+
+  .bill-item:last-child {
+    border-bottom: none;
+  }
+
+  .bill-cat-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .bill-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .bill-cat-name {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .bill-note {
+    font-size: 12px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .bill-amount {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--danger);
+    flex-shrink: 0;
+  }
+
+  .bill-delete {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    opacity: 0;
+  }
+
+  .bill-item:hover .bill-delete {
+    opacity: 1;
+  }
+
+  .bill-delete:hover {
+    background: #fde8e8;
+    color: var(--danger);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-secondary);
+  }
+
+  .empty-state .icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    opacity: 0.5;
+  }
+
+  .empty-state p {
+    font-size: 14px;
+  }
+
+  /* ===== 弹窗 ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.show {
+    display: flex;
+  }
+
+  .modal {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 28px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+
+  .modal h3 {
+    font-size: 18px;
+    margin-bottom: 18px;
+  }
+
+  .modal input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 16px;
+    margin-bottom: 18px;
+    outline: none;
+  }
+
+  .modal input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .modal-actions button {
+    flex: 1;
+    padding: 11px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .btn-cancel {
+    background: var(--bg);
+    color: var(--text-secondary);
+  }
+
+  .btn-cancel:hover {
+    background: #e4e9f0;
+  }
+
+  .btn-confirm {
+    background: var(--primary);
+    color: #fff;
+  }
+
+  .btn-confirm:hover {
+    background: #1a7bb8;
+  }
+
+  /* ===== Toast ===== */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--text);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    z-index: 2000;
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 640px) {
+    body { padding: 12px; font-size: 15px; }
+    .overview-card { padding: 20px; }
+    .budget-amount { font-size: 28px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group input,
+    .form-group select { font-size: 16px; padding: 12px; }
+    .overview-stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .stat-item { padding: 10px 6px; }
+    .stat-value { font-size: 16px; }
+    .stat-label { font-size: 12px; }
+    .progress-text { font-size: 13px; }
+    .cat-name { width: 50px; font-size: 13px; }
+    .cat-amount { width: 65px; font-size: 14px; }
+    .cat-percent { width: 38px; font-size: 12px; }
+    .bill-delete { opacity: 1; min-width: 44px; min-height: 44px; }
+    .budget-edit-btn { min-height: 44px; padding: 10px 18px; font-size: 14px; }
+    .chip { min-height: 44px; padding: 10px 18px; font-size: 14px; }
+    .submit-btn { min-height: 48px; font-size: 16px; }
+    header h1 { font-size: 22px; }
+    .card-title { font-size: 16px; }
+    .bill-cat-name { font-size: 15px; }
+    .bill-note { font-size: 13px; }
+    .bill-amount { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>我的记账本</h1>
+    <p id="monthLabel">2026年9月</p>
+  </header>
+
+  <!-- ===== 概览卡片 ===== -->
+  <div class="overview-card">
+    <div class="overview-top">
+      <div>
+        <div class="budget-label">本月预算</div>
+        <div class="budget-amount"><span>¥</span><span id="budgetTotal">1,500</span></div>
+      </div>
+      <button class="budget-edit-btn" onclick="openBudgetModal()">修改预算</button>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-text">
+        <span>已用 <span id="progressPercent">0%</span></span>
+        <span id="budgetStatus">剩余充足</span>
+      </div>
+    </div>
+
+    <div class="overview-stats">
+      <div class="stat-item">
+        <div class="stat-label">已支出</div>
+        <div class="stat-value spent" id="spentAmount">¥0</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">剩余额度</div>
+        <div class="stat-value remaining" id="remainingAmount">¥1,500</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">日均可用</div>
+        <div class="stat-value" id="dailyAvailable">¥0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 快速记账 ===== -->
+  <div class="card">
+    <div class="card-title">记一笔</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>日期</label>
+        <input type="date" id="billDate">
+      </div>
+      <div class="form-group">
+        <label>金额（元）</label>
+        <input type="number" id="billAmount" placeholder="0.00" min="0" step="0.01">
+      </div>
+      <div class="form-group">
+        <label>备注</label>
+        <input type="text" id="billNote" placeholder="选填">
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:16px;">
+      <label>分类</label>
+      <div class="category-chips" id="categoryChips"></div>
+    </div>
+    <button class="submit-btn" onclick="addBill()">添加记录</button>
+  </div>
+
+  <!-- ===== 分类统计 ===== -->
+  <div class="card">
+    <div class="card-title">分类统计（本月）</div>
+    <div class="category-stats" id="categoryStats"></div>
+  </div>
+
+  <!-- ===== 账单列表 ===== -->
+  <div class="card">
+    <div class="card-title">账单明细</div>
+    <div class="bill-list" id="billList"></div>
+  </div>
+</div>
+
+<!-- ===== 预算修改弹窗 ===== -->
+<div class="modal-overlay" id="budgetModal">
+  <div class="modal">
+    <h3>设置本月预算</h3>
+    <input type="number" id="budgetInput" placeholder="请输入预算金额" min="0">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeBudgetModal()">取消</button>
+      <button class="btn-confirm" onclick="saveBudget()">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== 数据配置 =====
+const CATEGORIES = [
+  { id: 'food', name: '餐饮', color: '#e74c3c', icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>' },
+  { id: 'transport', name: '出行', color: '#3498db', icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>' },
+  { id: 'shopping', name: '购物', color: '#9b59b6', icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>' },
+  { id: 'entertainment', name: '娱乐', color: '#f39c12', icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/></svg>' },
+  { id: 'study', name: '学习', color: '#1abc9c', icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' }
+];
+
+const STORAGE_KEY = 'expense_tracker_data';
+
+// ===== 状态 =====
+let state = {
+  budget: 1500,
+  bills: [],
+  selectedCategory: 'food'
+};
+
+// ===== 初始化 =====
+function init() {
+  loadData();
+  setDefaultDate();
+  renderCategoryChips();
+  renderAll();
+}
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const data = JSON.parse(saved);
+      state.budget = data.budget || 1500;
+      state.bills = data.bills || [];
+    }
+  } catch (e) {
+    console.error('加载数据失败', e);
+  }
+}
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    budget: state.budget,
+    bills: state.bills
+  }));
+}
+
+function setDefaultDate() {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  document.getElementById('billDate').value = `${yyyy}-${mm}-${dd}`;
+}
+
+// ===== 渲染分类选择 =====
+function renderCategoryChips() {
+  const container = document.getElementById('categoryChips');
+  container.innerHTML = CATEGORIES.map(cat => `
+    <div class="chip ${state.selectedCategory === cat.id ? 'active' : ''}"
+         onclick="selectCategory('${cat.id}')">
+      <span class="dot" style="background:${cat.color}"></span>
+      ${cat.name}
+    </div>
+  `).join('');
+}
+
+function selectCategory(id) {
+  state.selectedCategory = id;
+  renderCategoryChips();
+}
+
+// ===== 添加账单 =====
+function addBill() {
+  const date = document.getElementById('billDate').value;
+  const amount = parseFloat(document.getElementById('billAmount').value);
+  const note = document.getElementById('billNote').value.trim();
+
+  if (!date) {
+    showToast('请选择日期');
+    return;
+  }
+  if (!amount || amount <= 0) {
+    showToast('请输入有效金额');
+    return;
+  }
+
+  const bill = {
+    id: Date.now() + Math.random(),
+    date: date,
+    category: state.selectedCategory,
+    amount: amount,
+    note: note || CATEGORIES.find(c => c.id === state.selectedCategory).name
+  };
+
+  state.bills.push(bill);
+  saveData();
+  renderAll();
+
+  // 重置表单
+  document.getElementById('billAmount').value = '';
+  document.getElementById('billNote').value = '';
+  showToast('记账成功');
+}
+
+// ===== 删除账单 =====
+function deleteBill(id) {
+  state.bills = state.bills.filter(b => b.id !== id);
+  saveData();
+  renderAll();
+  showToast('已删除');
+}
+
+// ===== 获取本月账单 =====
+function getCurrentMonthBills() {
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const prefix = `${yyyy}-${mm}`;
+  return state.bills.filter(b => b.date.startsWith(prefix));
+}
+
+// ===== 渲染全部 =====
+function renderAll() {
+  renderOverview();
+  renderCategoryStats();
+  renderBillList();
+  renderMonthLabel();
+}
+
+function renderMonthLabel() {
+  const now = new Date();
+  document.getElementById('monthLabel').textContent =
+    `${now.getFullYear()}年${now.getMonth() + 1}月`;
+}
+
+// ===== 渲染概览 =====
+function renderOverview() {
+  const bills = getCurrentMonthBills();
+  const spent = bills.reduce((sum, b) => sum + b.amount, 0);
+  const remaining = state.budget - spent;
+  const percent = state.budget > 0 ? (spent / state.budget * 100) : 0;
+
+  // 本月天数和已过天数
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const dayOfMonth = now.getDate();
+  const remainingDays = daysInMonth - dayOfMonth + 1;
+  const dailyAvailable = remainingDays > 0 ? remaining / remainingDays : 0;
+
+  // 预算状态
+  const timeProgress = (dayOfMonth / daysInMonth) * 100;
+  let statusText = '剩余充足';
+  let statusColor = '#a8e6cf';
+  if (percent > 100) {
+    statusText = '已超预算';
+    statusColor = '#ff6b6b';
+  } else if (percent > timeProgress + 10) {
+    statusText = '支出偏快';
+    statusColor = '#ffd166';
+  } else if (percent < timeProgress - 10) {
+    statusText = '支出较慢';
+    statusColor = '#a8e6cf';
+  } else {
+    statusText = '进度正常';
+    statusColor = '#fff';
+  }
+
+  document.getElementById('budgetTotal').textContent = formatMoney(state.budget);
+  document.getElementById('spentAmount').textContent = '¥' + formatMoney(spent);
+  document.getElementById('remainingAmount').textContent = '¥' + formatMoney(remaining);
+  document.getElementById('dailyAvailable').textContent = '¥' + formatMoney(dailyAvailable);
+  document.getElementById('progressPercent').textContent = percent.toFixed(1) + '%';
+  document.getElementById('budgetStatus').textContent = statusText;
+
+  const fill = document.getElementById('progressFill');
+  fill.style.width = Math.min(percent, 100) + '%';
+  fill.className = 'progress-fill';
+  if (percent > 100) fill.classList.add('danger');
+  else if (percent > 80) fill.classList.add('warning');
+}
+
+// ===== 渲染分类统计 =====
+function renderCategoryStats() {
+  const bills = getCurrentMonthBills();
+  const container = document.getElementById('categoryStats');
+
+  if (bills.length === 0) {
+    container.innerHTML = '<div class="empty-state"><p>本月暂无支出记录</p></div>';
+    return;
+  }
+
+  const totalSpent = bills.reduce((sum, b) => sum + b.amount, 0);
+
+  const stats = CATEGORIES.map(cat => {
+    const catBills = bills.filter(b => b.category === cat.id);
+    const amount = catBills.reduce((sum, b) => sum + b.amount, 0);
+    const percent = totalSpent > 0 ? (amount / totalSpent * 100) : 0;
+    return { ...cat, amount, percent };
+  }).sort((a, b) => b.amount - a.amount);
+
+  container.innerHTML = stats.map(s => `
+    <div class="cat-row">
+      <div class="cat-name">
+        <span class="dot" style="background:${s.color}"></span>
+        ${s.name}
+      </div>
+      <div class="cat-bar-wrap">
+        <div class="cat-bar" style="width:${s.percent}%;background:${s.color}">
+          ${s.percent > 15 ? `<span>${s.percent.toFixed(0)}%</span>` : ''}
+        </div>
+      </div>
+      <div class="cat-amount">¥${formatMoney(s.amount)}</div>
+      <div class="cat-percent">${s.percent.toFixed(1)}%</div>
+    </div>
+  `).join('');
+}
+
+// ===== 渲染账单列表 =====
+function renderBillList() {
+  const bills = getCurrentMonthBills();
+  const container = document.getElementById('billList');
+
+  if (bills.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <p>还没有记账记录，开始记第一笔吧</p>
+      </div>`;
+    return;
+  }
+
+  // 按日期分组，倒序
+  const grouped = {};
+  bills.forEach(b => {
+    if (!grouped[b.date]) grouped[b.date] = [];
+    grouped[b.date].push(b);
+  });
+
+  const sortedDates = Object.keys(grouped).sort((a, b) => b.localeCompare(a));
+
+  container.innerHTML = sortedDates.map(date => {
+    const dayBills = grouped[date];
+    const dayTotal = dayBills.reduce((sum, b) => sum + b.amount, 0);
+    const dateObj = new Date(date);
+    const weekday = ['周日','周一','周二','周三','周四','周五','周六'][dateObj.getDay()];
+
+    return `
+      <div class="bill-date-group">
+        <div class="bill-date-header">
+          <span>${date} ${weekday}</span>
+          <span>当日支出 ¥${formatMoney(dayTotal)}</span>
+        </div>
+        ${dayBills.map(b => {
+          const cat = CATEGORIES.find(c => c.id === b.category);
+          return `
+            <div class="bill-item">
+              <div class="bill-cat-icon" style="background:${cat.color}20;color:${cat.color}">
+                ${cat.icon}
+              </div>
+              <div class="bill-info">
+                <div class="bill-cat-name">${cat.name}</div>
+                <div class="bill-note">${escapeHtml(b.note)}</div>
+              </div>
+              <div class="bill-amount">-¥${formatMoney(b.amount)}</div>
+              <button class="bill-delete" onclick="deleteBill(${b.id})" title="删除">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/>
+                </svg>
+              </button>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }).join('');
+}
+
+// ===== 预算弹窗 =====
+function openBudgetModal() {
+  document.getElementById('budgetInput').value = state.budget;
+  document.getElementById('budgetModal').classList.add('show');
+  setTimeout(() => document.getElementById('budgetInput').focus(), 100);
+}
+
+function closeBudgetModal() {
+  document.getElementById('budgetModal').classList.remove('show');
+}
+
+function saveBudget() {
+  const val = parseFloat(document.getElementById('budgetInput').value);
+  if (!val || val <= 0) {
+    showToast('请输入有效金额');
+    return;
+  }
+  state.budget = val;
+  saveData();
+  renderOverview();
+  closeBudgetModal();
+  showToast('预算已更新');
+}
+
+// 点击遮罩关闭
+document.getElementById('budgetModal').addEventListener('click', function(e) {
+  if (e.target === this) closeBudgetModal();
+});
+
+// ===== 工具函数 =====
+function formatMoney(num) {
+  return num.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// 回车快捷添加
+document.getElementById('billAmount').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') addBill();
+});
+document.getElementById('billNote').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') addBill();
+});
+
+// 启动
+init();
+</script>
+</body>
+</html>
